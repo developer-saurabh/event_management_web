@@ -1,10 +1,10 @@
 import 'package:event_management_web/screens/admin/admin_home.dart';
+import 'package:event_management_web/screens/admin/admin_poll_page.dart';
 import 'package:event_management_web/screens/admin/bookings_page.dart';
 import 'package:event_management_web/screens/admin/manage_events_page.dart';
 import 'package:event_management_web/screens/admin/users_page.dart';
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
-
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -21,6 +21,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     ManageEventsPage(),
     BookingsPage(),
     UsersPage(),
+    AdminPollPage(),
   ];
 
   @override
@@ -38,24 +39,26 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 const Text(
                   "Admin Panel",
                   style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 40),
 
                 sidebarItem(Icons.dashboard, "Dashboard", 0),
                 sidebarItem(Icons.event, "Manage Events", 1),
                 sidebarItem(Icons.book_online, "Bookings", 2),
-                // sidebarItem(Icons.people, "Users", 3),
 
+                // sidebarItem(Icons.people, "Users", 3),
                 const Spacer(),
 
                 ListTile(
-                  leading:
-                      const Icon(Icons.logout, color: Colors.white),
-                  title: const Text("Logout",
-                      style: TextStyle(color: Colors.white)),
+                  leading: const Icon(Icons.logout, color: Colors.white),
+                  title: const Text(
+                    "Logout",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   onTap: () async {
                     await AuthService().logout();
                   },
@@ -71,7 +74,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               padding: const EdgeInsets.all(30),
               child: pages[selectedIndex],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -81,12 +84,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
     final isSelected = selectedIndex == index;
 
     return ListTile(
-      leading: Icon(icon,
-          color: isSelected ? Colors.purple : Colors.white),
-      title: Text(title,
-          style: TextStyle(
-              color:
-                  isSelected ? Colors.purple : Colors.white)),
+      leading: Icon(icon, color: isSelected ? Colors.purple : Colors.white),
+      title: Text(
+        title,
+        style: TextStyle(color: isSelected ? Colors.purple : Colors.white),
+      ),
       onTap: () {
         setState(() {
           selectedIndex = index;

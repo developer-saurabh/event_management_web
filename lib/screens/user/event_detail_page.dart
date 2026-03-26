@@ -1,3 +1,4 @@
+import 'package:event_management_web/screens/user/poll_voting_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_network/image_network.dart';
@@ -18,11 +19,14 @@ class _EventDetailPageState extends State<EventDetailPage> {
   bool isLoading = false;
 
   Future<void> bookEvent(
-      String eventId, int ticketsSold, int ticketLimit) async {
+    String eventId,
+    int ticketsSold,
+    int ticketLimit,
+  ) async {
     if (ticketsSold >= ticketLimit) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Event Sold Out")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Event Sold Out")));
       return;
     }
 
@@ -31,24 +35,21 @@ class _EventDetailPageState extends State<EventDetailPage> {
 
       await BookingService().bookEvent(uid, eventId);
 
-      await FirebaseFirestore.instance
-          .collection('events')
-          .doc(eventId)
-          .update({
-        "ticketsSold": FieldValue.increment(1),
-      });
+      await FirebaseFirestore.instance.collection('events').doc(eventId).update(
+        {"ticketsSold": FieldValue.increment(1)},
+      );
 
       setState(() => isLoading = false);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Booking Successful 🎉")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Booking Successful 🎉")));
     } catch (e) {
       setState(() => isLoading = false);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
     }
   }
 
@@ -57,10 +58,11 @@ class _EventDetailPageState extends State<EventDetailPage> {
     return Scaffold(
       backgroundColor: const Color(0xff0f172a),
       body: FutureBuilder<DocumentSnapshot>(
-        future: FirebaseFirestore.instance
-            .collection('events')
-            .doc(widget.eventId)
-            .get(),
+        future:
+            FirebaseFirestore.instance
+                .collection('events')
+                .doc(widget.eventId)
+                .get(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -124,38 +126,76 @@ class _EventDetailPageState extends State<EventDetailPage> {
 
                       const SizedBox(height: 30),
 
-                      SizedBox(
-                        width: 250,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: (isSoldOut || isLoading)
-                              ? null
-                              : () => bookEvent(
-                                    widget.eventId,
-                                    ticketsSold,
-                                    ticketLimit,
-                                  ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isSoldOut
-                                ? Colors.grey
-                                : Colors.deepPurple,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // 🔥 BOOK BUTTON
+                          SizedBox(
+                            width: 250,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed:
+                                  (isSoldOut || isLoading)
+                                      ? null
+                                      : () => bookEvent(
+                                        widget.eventId,
+                                        ticketsSold,
+                                        ticketLimit,
+                                      ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    isSoldOut ? Colors.grey : Colors.deepPurple,
+                              ),
+                              child:
+                                  isLoading
+                                      ? const CircularProgressIndicator(
+                                        color: Colors.white,
+                                      )
+                                      : Text(
+                                        isSoldOut ? "Sold Out" : "Book Now",
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                            ),
                           ),
-                          child: isLoading
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                              : Text(
-                                  isSoldOut ? "Sold Out" : "Book Now",
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+
+                          const SizedBox(height: 15),
+
+                          // 🗳️ VOTE BUTTON (ADD THIS)
+                          SizedBox(
+                            width: 250,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (_) => PollVotingPage(
+                                          eventId: widget.eventId,
+                                        ),
                                   ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orange,
+                              ),
+                              child: const Text(
+                                "Vote Now",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                                 ),
-                        ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           );

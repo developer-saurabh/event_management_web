@@ -1,3 +1,4 @@
+import 'package:event_management_web/screens/organizer/pages/create_poll_dashboard_page.dart';
 import 'package:flutter/material.dart';
 import 'pages/organizer_home.dart';
 import 'pages/create_event_page.dart';
@@ -8,18 +9,17 @@ class OrganizerDashboard extends StatefulWidget {
   const OrganizerDashboard({super.key});
 
   @override
-  State<OrganizerDashboard> createState() =>
-      _OrganizerDashboardState();
+  State<OrganizerDashboard> createState() => _OrganizerDashboardState();
 }
 
-class _OrganizerDashboardState
-    extends State<OrganizerDashboard> {
+class _OrganizerDashboardState extends State<OrganizerDashboard> {
   int selectedIndex = 0;
 
   final pages = const [
     OrganizerHome(),
     CreateEventPage(),
     MyEventsPage(),
+    CreatePollDashboardPage(),
   ];
 
   @override
@@ -37,23 +37,26 @@ class _OrganizerDashboardState
                 const Text(
                   "Organizer Panel",
                   style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 40),
 
                 sidebarItem(Icons.dashboard, "Dashboard", 0),
                 sidebarItem(Icons.add_box, "Create Event", 1),
                 sidebarItem(Icons.event_note, "My Events", 2),
+                sidebarItem(Icons.poll, "Create Poll", 3),
 
                 const Spacer(),
 
                 ListTile(
-                  leading: const Icon(Icons.logout,
-                      color: Colors.white),
-                  title: const Text("Logout",
-                      style: TextStyle(color: Colors.white)),
+                  leading: const Icon(Icons.logout, color: Colors.white),
+                  title: const Text(
+                    "Logout",
+                    style: TextStyle(color: Colors.white),
+                  ),
                   onTap: () async {
                     await AuthService().logout();
                   },
@@ -69,23 +72,21 @@ class _OrganizerDashboardState
               padding: const EdgeInsets.all(30),
               child: pages[selectedIndex],
             ),
-          )
+          ),
         ],
       ),
     );
   }
 
-  Widget sidebarItem(
-      IconData icon, String title, int index) {
+  Widget sidebarItem(IconData icon, String title, int index) {
     final isSelected = selectedIndex == index;
 
     return ListTile(
-      leading:
-          Icon(icon, color: isSelected ? Colors.purple : Colors.white),
-      title: Text(title,
-          style: TextStyle(
-              color:
-                  isSelected ? Colors.purple : Colors.white)),
+      leading: Icon(icon, color: isSelected ? Colors.purple : Colors.white),
+      title: Text(
+        title,
+        style: TextStyle(color: isSelected ? Colors.purple : Colors.white),
+      ),
       onTap: () {
         setState(() {
           selectedIndex = index;
